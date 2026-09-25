@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0a3d91"><title>Panel comunitario | AlertaFoco</title><link rel="icon" type="image/x-icon" href="assets/favicon-alertafoco.ico"><link rel="icon" type="image/png" href="assets/favicon-alertafoco.png"><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/estilos.css"></head>
+<body>
+  <div class="gov-strip"><div class="gov-strip-inner"><strong>GOBIERNO DE LA PROVINCIA DE FORMOSA</strong><span>AlertaFoco · Seguimiento comunitario</span></div></div>
+  <header class="site-header"><div class="site-header-inner"><a class="brand" href="index.html"><img class="brand-mark brand-logo" src="assets/logo-alertafoco.svg" alt="Logo AlertaFoco" /><span><span class="brand-title">Alerta<span>Foco</span></span><small class="brand-sub">FORMOSA</small></span></a><nav class="nav-main"><a href="index.html">Inicio</a><a href="mapa.html">Mapa</a><a href="reportar.html">Reportar</a><a class="activo" href="panel.html">Panel</a></nav><button class="theme-toggle" data-theme-toggle></button><div class="gov-brand"><span data-icon="shield" data-icon-size="27"></span><span><small>Gobierno de la Provincia de</small><strong>FORMOSA</strong></span></div><button class="menu-toggle" data-menu-toggle aria-expanded="false" data-icon="menu"></button></div><div class="mobile-menu" data-mobile-menu><a href="index.html"><span data-icon="home"></span>Inicio</a><a href="mapa.html"><span data-icon="map"></span>Mapa de focos</a><a href="reportar.html"><span data-icon="report"></span>Reportar un foco</a><a href="panel.html"><span data-icon="layers"></span>Panel comunitario</a></div></header>
+  <main class="main"><div class="container">
+    <div class="section-head"><div><div class="section-kicker">Seguimiento</div><h1 class="section-title">Panel comunitario</h1><p class="section-desc" id="total-reportes">Cargando reportes...</p></div><a href="reportar.html" class="btn btn-red"><span data-icon="report"></span> Nuevo reporte</a></div>
+    <div class="filter-bar"><button class="filter-btn activo" id="filtro-todos" data-filter="todos">Todos</button><button class="filter-btn" id="filtro-pendiente" data-filter="pendiente">Pendientes</button><button class="filter-btn" id="filtro-revision" data-filter="en_revision">En revisión</button><button class="filter-btn" id="filtro-resuelto" data-filter="resuelto">Resueltos</button></div>
+    <div id="lista-reportes"><div class="loading"><div class="spinner"></div>Cargando reportes...</div></div>
+  </div></main>
+  <footer class="footer"><div class="footer-inner"><div><div class="footer-title">AlertaFoco Formosa</div><p>Información comunitaria sobre posibles focos reportados.</p><div class="footer-logos"><div class="institutional-badge logo-badge-todos"><div class="logo-todos-mark"><div class="logo-todos-stars"><span></span><span></span><span></span><span></span></div></div><div class="logo-todos-text"><strong>TODOS</strong><span>UNIDOS</span></div></div><div class="institutional-badge logo-badge-gobierno"><div class="logo-gobierno-escudo"></div><div class="logo-gobierno-text"><strong>GOBIERNO</strong><span>DE FORMOSA</span></div></div><div class="institutional-badge logo-badge-ipf"><div class="logo-ipf-mark">IPF</div><div class="logo-ipf-text"><strong>INSTITUTO</strong><span>POLITÉCNICO</span><strong>FORMOSA</strong></div></div></div></div><div><div class="footer-title">Accesos</div><p><a href="index.html">Inicio</a><br><a href="mapa.html">Mapa</a><br><a href="reportar.html">Reportar</a></p></div><div><div class="footer-title">Gobierno</div><p>Gobierno de la Provincia de Formosa</p></div></div></footer><nav class="bottom-nav"><a href="index.html"><span data-icon="home"></span>Inicio</a><a href="reportar.html"><span data-icon="report"></span>Reportar</a><a href="mapa.html"><span data-icon="map"></span>Mapa</a><a href="panel.html" class="activo"><span data-icon="layers"></span>Panel</a></nav>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script><script src="js/firebase-config.js"></script><script src="js/app.js"></script>
+  <script>
+    let todosReportes=[]; let filtroActual='todos';
+    const iconMap={'Agua estancada':'water','Recipiente con agua':'bottle','Basura acumulada':'trash','Cubierta con agua':'tire','Planta con agua':'leaf','Otro':'help'};
+    const estadoTexto={pendiente:'Pendiente',en_revision:'En revisión',resuelto:'Resuelto'};
+    const badgeClass={pendiente:'badge-pendiente',en_revision:'badge-revision',resuelto:'badge-resuelto'};
+
+    function formatFecha(ts){
+      if (!ts) return 'Sin fecha';
+      if (ts.toDate) return ts.toDate().toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'});
+      if (ts.seconds) return new Date(ts.seconds * 1000).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'});
+      return 'Sin fecha';
+    }
+
+    function renderReportes(lista){
+      const el=document.getElementById('lista-reportes');
+      if(!lista.length){
+        el.innerHTML='<div class="card center"><span data-icon="search" data-icon-size="28" style="margin:0 auto 9px"></span><h3>Sin reportes para este filtro</h3><p style="margin-top:5px">Probá con otro estado o registrá un nuevo reporte.</p></div>';
+        document.querySelectorAll('[data-icon]').forEach(x=>x.dataset.iconReady='');
+        return;
+      }
+      el.innerHTML=lista.map(r=>{
+        const icon=AFIcon(iconMap[r.tipoFoco]||'report',22);
+        const estado=estadoTexto[r.estado]||r.estado||'Sin estado';
+        const telefono = r.telefonoContacto ? ` · Tel: ${r.telefonoContacto}` : '';
+        return `<article class="reporte-card ${r.estado||''}"><div class="report-icon">${icon}</div><div><div class="report-top"><div><div class="report-title">${r.tipoFoco||'Posible foco'}</div><div class="report-meta">📍 ${r.barrio||'Sin barrio'}${telefono} · ${formatFecha(r.fecha)}</div></div><span class="badge ${badgeClass[r.estado]||''}">${estado}</span></div><div class="report-meta" style="margin-top:8px">Nivel de riesgo: ${r.nivelRiesgo||'No indicado'}</div>${r.descripcion?`<p style="font-size:12px;color:var(--texto-2);margin-top:8px;line-height:1.5">${r.descripcion}</p>`:''}<div class="report-actions">${r.estado==='pendiente'?`<button class="btn btn-blue btn-sm" onclick="cambiarEstado('${r.id}','en_revision')">En revisión</button>`:''}${r.estado!=='resuelto'?`<button class="btn btn-green btn-sm" onclick="cambiarEstado('${r.id}','resuelto')">Marcar resuelto</button>`:`<button class="btn btn-soft btn-sm" onclick="cambiarEstado('${r.id}','pendiente')">Reabrir</button>`}<a class="btn btn-soft btn-sm" href="mapa.html">Ver mapa</a></div></div></article>`;}).join('');
+    }
+
+    function aplicarFiltro(estado){
+      filtroActual=estado;
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('activo'));
+      const id=estado==='todos'?'filtro-todos':estado==='en_revision'?'filtro-revision':'filtro-'+estado;
+      const active = document.getElementById(id);
+      if (active) active.classList.add('activo');
+      renderReportes(estado==='todos'?todosReportes:todosReportes.filter(r=>r.estado===estado));
+    }
+
+    async function cambiarEstado(id,nuevoEstado){
+      try {
+        if (!window.db || !db.collection) {
+          const list = window.ALERTAFOCO_getLocalReports ? window.ALERTAFOCO_getLocalReports() : [];
+          const next = list.map(item => item.id === id ? { ...item, estado: nuevoEstado } : item);
+          localStorage.setItem('alertafoco-local-reportes', JSON.stringify(next));
+          todosReportes = next;
+          aplicarFiltro(filtroActual);
+          mostrarToast('Estado actualizado localmente.', 'ok');
+          return;
+        }
+        await db.collection('reportes').doc(id).update({estado:nuevoEstado});
+      }catch(e){
+        mostrarToast(e.message||'No fue posible actualizar el reporte.','error');
+      }
+    }
+
+    function mostrarToast(msg,type){
+      const old=document.querySelector('.toast'); if(old) old.remove();
+      const t=document.createElement('div'); t.className='toast';
+      t.innerHTML=`<span data-icon="${type==='error'?'info':'check'}"></span><div>${msg}</div>`;
+      document.body.appendChild(t);
+      if(window.AFIcon) t.querySelector('[data-icon]').outerHTML=AFIcon(type==='error'?'info':'check',20);
+      setTimeout(()=>t.remove(),3500);
+    }
+
+    function cargarDesdeLocal(){
+      const local = window.ALERTAFOCO_getLocalReports ? window.ALERTAFOCO_getLocalReports() : [];
+      todosReportes = local;
+      todosReportes.sort((a,b)=>(b.fecha?.seconds||0)-(a.fecha?.seconds||0));
+      document.getElementById('total-reportes').textContent=`${todosReportes.length} reporte${todosReportes.length===1?'':'s'} registrado${todosReportes.length===1?'':'s'} localmente`;
+      aplicarFiltro(filtroActual);
+    }
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>aplicarFiltro(b.dataset.filter)));
+
+      if (window.db) {
+        db.collection('reportes').onSnapshot(snap=>{
+          todosReportes=[];
+          snap.forEach(doc=>todosReportes.push({id:doc.id,...doc.data()}));
+          todosReportes.sort((a,b)=>(b.fecha?.seconds||0)-(a.fecha?.seconds||0));
+          document.getElementById('total-reportes').textContent=`${todosReportes.length} reporte${todosReportes.length===1?'':'s'} registrado${todosReportes.length===1?'':'s'}`;
+          aplicarFiltro(filtroActual);
+        },()=>{
+          document.getElementById('total-reportes').textContent='No se pudo consultar el sistema';
+          document.getElementById('lista-reportes').innerHTML='<div class="alert-card"><strong>Sin conexión con los reportes.</strong><p style="margin-top:5px;font-size:12px">Revisá la conexión y actualizá la página.</p></div>';
+          cargarDesdeLocal();
+        });
+      } else {
+        cargarDesdeLocal();
+      }
+    });
+  </script>
+</body></html>

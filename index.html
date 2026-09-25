@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a3d91"><meta name="description" content="AlertaFoco Formosa: reportes comunitarios de posibles focos de dengue.">
+  <title>AlertaFoco | Formosa</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon-alertafoco.ico">
+  <link rel="icon" type="image/png" href="assets/favicon-alertafoco.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <div class="gov-strip"><div class="gov-strip-inner"><strong>GOBIERNO DE LA PROVINCIA DE FORMOSA</strong><span>Salud · Prevención · Comunidad</span></div></div>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="index.html" aria-label="AlertaFoco Formosa">
+        <img class="brand-mark brand-logo" src="assets/logo-alertafoco.svg" alt="Logo AlertaFoco" />
+        <span><span class="brand-title">Alerta<span>Foco</span></span><small class="brand-sub">FORMOSA</small></span>
+      </a>
+      <nav class="nav-main">
+        <a class="activo" href="index.html">Inicio</a><a href="mapa.html">Mapa</a><a href="reportar.html">Reportar</a><a href="panel.html">Panel</a>
+      </nav>
+      <button class="theme-toggle" data-theme-toggle aria-label="Cambiar tema"></button>
+      <button class="menu-toggle" data-menu-toggle aria-expanded="false" aria-label="Abrir menú" data-icon="menu"></button>
+    </div>
+    <div class="mobile-menu" data-mobile-menu>
+      <a href="index.html"><span data-icon="home"></span>Inicio</a><a href="mapa.html"><span data-icon="map"></span>Mapa de focos</a><a href="reportar.html"><span data-icon="report"></span>Reportar un foco</a><a href="panel.html"><span data-icon="layers"></span>Panel comunitario</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <section class="hero reveal" data-reveal>
+        <div class="hero-grid">
+          <div>
+            <div class="hero-kicker"><span data-icon="shield" data-icon-size="16"></span> prevención comunitaria</div>
+            <h1>Detectá, reportá y ayudá a frenar el <span>dengue.</span></h1>
+            <p>AlertaFoco permite ubicar posibles focos de reproducción del mosquito y compartir reportes con la comunidad. Elegí el punto exacto en el mapa y enviá la información en pocos pasos.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="reportar.html"><span data-icon="report"></span> Reportar un foco <span data-icon="arrow"></span></a>
+              <a class="btn" href="mapa.html" style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22)"><span data-icon="map"></span> Ver mapa</a>
+            </div>
+          </div>
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-orbit">
+              <div class="hero-core"><span data-icon="shield" data-icon-size="92"></span></div>
+              <div class="hero-chip a"><span data-icon="location" data-icon-size="16"></span> ubicación precisa</div>
+              <div class="hero-chip b"><span data-icon="chart" data-icon-size="16"></span> datos comunitarios</div>
+              <div class="hero-chip c"><span data-icon="check" data-icon-size="16"></span> prevención activa</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head reveal" data-reveal>
+          <div><div class="section-kicker">Accesos rápidos</div><h2 class="section-title">Todo en un solo lugar</h2><p class="section-desc">Una interfaz directa, con acciones claras y navegación sencilla desde el celular o la computadora.</p></div>
+        </div>
+        <div class="grid-4">
+          <article class="card card-hover reveal" data-reveal><div class="feature-icon red"><span data-icon="report"></span></div><h3>Reportar</h3><p>Marcá el lugar exacto, seleccioná el tipo de foco y enviá el reporte.</p><a class="card-link" href="reportar.html">Abrir reporte <span data-icon="chevron" data-icon-size="15"></span></a></article>
+          <article class="card card-hover reveal" data-reveal><div class="feature-icon"><span data-icon="map"></span></div><h3>Mapa interactivo</h3><p>Consultá los puntos reportados y reconocé su estado de seguimiento.</p><a class="card-link" href="mapa.html">Explorar mapa <span data-icon="chevron" data-icon-size="15"></span></a></article>
+          <article class="card card-hover reveal" data-reveal><div class="feature-icon green"><span data-icon="shield"></span></div><h3>Prevención</h3><p>Conocé prácticas simples para reducir recipientes con agua acumulada.</p><a class="card-link" href="#prevencion">Ver recomendaciones <span data-icon="chevron" data-icon-size="15"></span></a></article>
+          <article class="card card-hover reveal" data-reveal><div class="feature-icon yellow"><span data-icon="chart"></span></div><h3>Panel comunitario</h3><p>Revisá los reportes y su estado de seguimiento en tiempo real.</p><a class="card-link" href="panel.html">Ver panel <span data-icon="chevron" data-icon-size="15"></span></a></article>
+        </div>
+      </section>
+
+      <section class="section" id="estado">
+        <div class="section-head reveal" data-reveal><div><div class="section-kicker">Información dinámica</div><h2 class="section-title">Estado de los reportes</h2></div></div>
+        <div class="stats" id="stats-container"><div class="stat"><div class="spinner"></div></div></div>
+      </section>
+
+      <section class="section" id="prevencion">
+        <div class="section-head reveal" data-reveal><div><div class="section-kicker">Prevención</div><h2 class="section-title">Pequeñas acciones, gran impacto</h2><p class="section-desc">El mosquito puede reproducirse en recipientes con poca cantidad de agua. Revisar patios, terrazas y espacios comunes ayuda a reducir criaderos.</p></div></div>
+        <div class="grid-3">
+          <article class="card card-hover reveal" data-reveal><div class="feature-icon"><span data-icon="water"></span></div><h3>Eliminá agua acumulada</h3><p>Vaciá, tapá o renová recipientes que puedan juntar agua después de una lluvia.</p></article>
+          <article class="card card-hover reveal" data-reveal><div class="feature-icon green"><span data-icon="trash"></span></div><h3>Mantené limpio el entorno</h3><p>Retirá basura, envases y elementos en desuso que puedan convertirse en focos.</p></article>
+          <article class="card card-hover reveal" data-reveal><div class="feature-icon red"><span data-icon="tire"></span></div><h3>Revisá cubiertas y macetas</h3><p>Guardalas bajo techo o en posición que impida la acumulación de agua.</p></article>
+        </div>
+      </section>
+
+      <div class="notice green reveal" data-reveal><span data-icon="info"></span><div><strong>Uso responsable.</strong> AlertaFoco organiza reportes ciudadanos. Un punto informado no constituye por sí mismo un diagnóstico sanitario ni reemplaza la intervención de las autoridades competentes.</div></div>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="footer-inner">
+    <div><div class="footer-title">AlertaFoco Formosa</div><p>Herramienta comunitaria de prevención y reporte de posibles focos de dengue.</p><div class="gov-footer"><span data-icon="shield" data-icon-size="28"></span><p><strong>Gobierno de la Provincia de Formosa</strong><br>Prevención y cuidado comunitario</p></div><div class="footer-logos">
+      <div class="institutional-badge logo-badge-todos">
+        <div class="logo-todos-mark"><div class="logo-todos-stars"><span></span><span></span><span></span><span></span></div></div>
+        <div class="logo-todos-text"><strong>TODOS</strong><span>UNIDOS</span></div>
+      </div>
+      <div class="institutional-badge logo-badge-gobierno">
+        <div class="logo-gobierno-escudo"></div>
+        <div class="logo-gobierno-text"><strong>GOBIERNO</strong><span>DE FORMOSA</span></div>
+      </div>
+      <div class="institutional-badge logo-badge-ipf">
+        <div class="logo-ipf-mark">IPF</div>
+        <div class="logo-ipf-text"><strong>INSTITUTO</strong><span>POLITÉCNICO</span><strong>FORMOSA</strong></div>
+      </div>
+    </div></div>
+    <div><div class="footer-title">Accesos</div><p><a href="mapa.html">Mapa de focos</a><br><a href="reportar.html">Reportar un foco</a><br><a href="panel.html">Panel comunitario</a></p></div>
+    <div><div class="footer-title">Contacto</div><p>Ante una emergencia, utilizá los canales oficiales de tu localidad.</p><p style="margin-top:8px">© <span data-year></span> AlertaFoco</p></div>
+  </div></footer>
+  <nav class="bottom-nav"><a href="index.html" class="activo"><span data-icon="home"></span>Inicio</a><a href="reportar.html"><span data-icon="report"></span>Reportar</a><a href="mapa.html"><span data-icon="map"></span>Mapa</a><a href="panel.html"><span data-icon="layers"></span>Panel</a></nav>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    async function cargarStats(){
+      const el=document.getElementById('stats-container');
+      try{
+        const snap=await db.collection('reportes').get(); let p=0,r=0,s=0;
+        snap.forEach(doc=>{const e=doc.data().estado;if(e==='pendiente')p++;else if(e==='en_revision')r++;else if(e==='resuelto')s++;});
+        el.innerHTML=`<div class="stat reveal is-visible"><div class="stat-label">Pendientes</div><div class="stat-value" style="color:var(--amarillo)">${p}</div><div class="stat-note">Esperando revisión</div></div><div class="stat reveal is-visible"><div class="stat-label">En revisión</div><div class="stat-value" style="color:var(--azul-2)">${r}</div><div class="stat-note">Seguimiento activo</div></div><div class="stat reveal is-visible"><div class="stat-label">Resueltos</div><div class="stat-value" style="color:var(--verde)">${s}</div><div class="stat-note">Marcados como atendidos</div></div><div class="stat reveal is-visible"><div class="stat-label">Total</div><div class="stat-value" style="color:var(--azul)">${p+r+s}</div><div class="stat-note">Reportes registrados</div></div>`;
+      }catch(e){el.innerHTML='<div class="notice red" style="grid-column:1/-1"><span data-icon="info"></span><div>No fue posible cargar las estadísticas ahora. El resto del sitio sigue disponible.</div></div>'; document.querySelectorAll('[data-icon]').forEach(x=>x.dataset.iconReady='');}
+    }
+    cargarStats();
+    if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+  </script>
+</body>
+</html>

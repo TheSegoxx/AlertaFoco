@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0a3d91">
+  <title>Mapa de focos | AlertaFoco</title><link rel="icon" type="image/x-icon" href="assets/favicon-alertafoco.ico"><link rel="icon" type="image/png" href="assets/favicon-alertafoco.png"><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <div class="gov-strip"><div class="gov-strip-inner"><strong>GOBIERNO DE LA PROVINCIA DE FORMOSA</strong><span>AlertaFoco · Mapa comunitario</span></div></div>
+  <header class="site-header"><div class="site-header-inner"><a class="brand" href="index.html"><img class="brand-mark brand-logo" src="assets/logo-alertafoco.svg" alt="Logo AlertaFoco" /><span><span class="brand-title">Alerta<span>Foco</span></span><small class="brand-sub">FORMOSA</small></span></a><nav class="nav-main"><a href="index.html">Inicio</a><a class="activo" href="mapa.html">Mapa</a><a href="reportar.html">Reportar</a><a href="panel.html">Panel</a></nav><button class="theme-toggle" data-theme-toggle></button><div class="gov-brand"><span data-icon="shield" data-icon-size="27"></span><span><small>Gobierno de la Provincia de</small><strong>FORMOSA</strong></span></div><button class="menu-toggle" data-menu-toggle aria-expanded="false" data-icon="menu"></button></div><div class="mobile-menu" data-mobile-menu><a href="index.html"><span data-icon="home"></span>Inicio</a><a href="mapa.html"><span data-icon="map"></span>Mapa de focos</a><a href="reportar.html"><span data-icon="report"></span>Reportar un foco</a><a href="panel.html"><span data-icon="layers"></span>Panel comunitario</a></div></header>
+  <main class="main"><div class="container">
+    <div class="section-head"><div><div class="section-kicker">Visualización</div><h1 class="section-title">Mapa de focos reportados</h1><p class="section-desc" id="contador-mapa">Cargando reportes...</p></div><a class="btn btn-red" href="reportar.html"><span data-icon="report"></span> Reportar un foco</a></div>
+    <div class="map-shell">
+      <section class="map-panel reveal" data-reveal><div class="map-toolbar"><button id="btn-centrar" class="map-pill" type="button"><span data-icon="target" data-icon-size="15"></span> Centrar Formosa</button><div class="map-pill" id="map-status">Actualizando...</div></div><div id="map"></div><div class="map-legend"><div class="legend-title">Estado</div><div class="legend-row"><span class="legend-dot" style="background:#e59a00"></span>Pendiente</div><div class="legend-row"><span class="legend-dot" style="background:#3d83d7"></span>En revisión</div><div class="legend-row"><span class="legend-dot" style="background:#1e9b5d"></span>Resuelto</div></div></section>
+      <aside class="map-info reveal" data-reveal><div class="feature-icon"><span data-icon="map"></span></div><h3>¿Cómo interpretar el mapa?</h3><p>Los puntos muestran reportes ciudadanos registrados en el sistema. El color representa el estado de seguimiento del reporte.</p><div class="notice" style="margin-top:14px"><span data-icon="info"></span><div>Un reporte es una señal comunitaria y no equivale a una confirmación sanitaria.</div></div><a class="btn btn-blue btn-block" href="reportar.html" style="margin-top:14px"><span data-icon="location"></span> Elegir un punto para reportar</a></aside>
+    </div>
+  </div></main>
+  <footer class="footer"><div class="footer-inner"><div><div class="footer-title">AlertaFoco Formosa</div><p>Herramienta comunitaria de prevención y reporte.</p><div class="footer-logos"><div class="institutional-badge logo-badge-todos"><div class="logo-todos-mark"><div class="logo-todos-stars"><span></span><span></span><span></span><span></span></div></div><div class="logo-todos-text"><strong>TODOS</strong><span>UNIDOS</span></div></div><div class="institutional-badge logo-badge-gobierno"><div class="logo-gobierno-escudo"></div><div class="logo-gobierno-text"><strong>GOBIERNO</strong><span>DE FORMOSA</span></div></div><div class="institutional-badge logo-badge-ipf"><div class="logo-ipf-mark">IPF</div><div class="logo-ipf-text"><strong>INSTITUTO</strong><span>POLITÉCNICO</span><strong>FORMOSA</strong></div></div></div></div><div><div class="footer-title">Navegación</div><p><a href="index.html">Inicio</a><br><a href="reportar.html">Reportar</a><br><a href="panel.html">Panel</a></p></div><div><div class="footer-title">Gobierno</div><p>Gobierno de la Provincia de Formosa</p></div></div></footer><nav class="bottom-nav"><a href="index.html"><span data-icon="home"></span>Inicio</a><a href="reportar.html"><span data-icon="report"></span>Reportar</a><a href="mapa.html" class="activo"><span data-icon="map"></span>Mapa</a><a href="panel.html"><span data-icon="layers"></span>Panel</a></nav>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/firebase-config.js"></script><script src="js/app.js"></script>
+  <script>
+    const FORMOSA=[-26.1775,-58.1781]; const colores={pendiente:'#e59a00',en_revision:'#3d83d7',resuelto:'#1e9b5d'}; const estadoTexto={pendiente:'Pendiente',en_revision:'En revisión',resuelto:'Resuelto'}; let markers=[];
+    const map=L.map('map').setView(FORMOSA,13); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(map);
+
+    function formatFecha(ts){
+      if (!ts) return 'Sin fecha';
+      if (ts.toDate) return ts.toDate().toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'});
+      if (ts.seconds) return new Date(ts.seconds * 1000).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'});
+      return 'Sin fecha';
+    }
+
+    function popupHtml(d){
+      const color=colores[d.estado]||'#64748b';
+      return `<div style="min-width:205px;font-family:Inter,system-ui,sans-serif"><div style="font-size:12px;font-weight:800;color:${color};text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">${estadoTexto[d.estado]||'Reporte'}</div><div style="font-size:15px;font-weight:800;margin-bottom:6px">${d.tipoFoco||'Posible foco'}</div><div style="font-size:12px;color:#667085;margin:4px 0">📍 ${d.barrio||'Sin barrio'}</div><div style="font-size:12px;color:#667085;margin:4px 0">Nivel: ${d.nivelRiesgo||'No indicado'}</div>${d.descripcion?`<div style="font-size:12px;color:#667085;margin-top:7px">${d.descripcion}</div>`:''}<div style="font-size:10px;color:#98a2b3;margin-top:8px">${formatFecha(d.fecha)}</div></div>`;
+    }
+
+    function renderLista(lista){
+      markers.forEach(m=>map.removeLayer(m));
+      markers=[];
+      let count=0;
+      lista.forEach(d=>{
+        const la=Number(d.latitud), lo=Number(d.longitud);
+        if(!Number.isFinite(la)||!Number.isFinite(lo)) return;
+        count++;
+        const color=colores[d.estado]||'#64748b';
+        const m=L.circleMarker([la,lo],{radius:10,color:'#fff',weight:2,fillColor:color,fillOpacity:.92}).addTo(map);
+        m.bindPopup(popupHtml(d));
+        markers.push(m);
+      });
+      document.getElementById('contador-mapa').textContent=`${count} reporte${count===1?'':'s'} visible${count===1?'':'s'} en el mapa`;
+      document.getElementById('map-status').textContent = window.db ? 'Datos en vivo' : 'Modo local';
+    }
+
+    function renderLocal(){
+      const local = window.ALERTAFOCO_getLocalReports ? window.ALERTAFOCO_getLocalReports() : [];
+      renderLista(local);
+    }
+
+    document.getElementById('btn-centrar').addEventListener('click',()=>map.setView(FORMOSA,13));
+
+    if (window.db) {
+      db.collection('reportes').onSnapshot(snap => {
+        const items=[];
+        snap.forEach(doc => items.push({id:doc.id,...doc.data()}));
+        renderLista(items);
+      }, () => {
+        document.getElementById('map-status').textContent='Sin conexión';
+        document.getElementById('contador-mapa').textContent='No fue posible actualizar el mapa ahora.';
+      });
+    } else {
+      renderLocal();
+      document.getElementById('map-status').textContent='Modo local';
+      if (!document.getElementById('contador-mapa').textContent || document.getElementById('contador-mapa').textContent.includes('Cargando')) {
+        document.getElementById('contador-mapa').textContent='Sin reportes sincronizados en línea';
+      }
+    }
+
+    window.addEventListener('load',()=>setTimeout(()=>map.invalidateSize(),250));
+  </script>
+</body>
+</html>

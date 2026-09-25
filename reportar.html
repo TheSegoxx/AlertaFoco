@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0a3d91">
+  <title>Reportar un foco | AlertaFoco</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon-alertafoco.ico">
+  <link rel="icon" type="image/png" href="assets/favicon-alertafoco.png">
+  <link rel="manifest" href="manifest.json"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <div class="gov-strip"><div class="gov-strip-inner"><strong>GOBIERNO DE LA PROVINCIA DE FORMOSA</strong><span>AlertaFoco · Reporte comunitario</span></div></div>
+  <header class="site-header"><div class="site-header-inner">
+    <a class="brand" href="index.html"><img class="brand-mark brand-logo" src="assets/logo-alertafoco.svg" alt="Logo AlertaFoco" /><span><span class="brand-title">Alerta<span>Foco</span></span><small class="brand-sub">FORMOSA</small></span></a>
+    <nav class="nav-main"><a href="index.html">Inicio</a><a href="mapa.html">Mapa</a><a class="activo" href="reportar.html">Reportar</a><a href="panel.html">Panel</a></nav>
+    <button class="theme-toggle" data-theme-toggle></button><div class="gov-brand"><span data-icon="shield" data-icon-size="27"></span><span><small>Gobierno de la Provincia de</small><strong>FORMOSA</strong></span></div><button class="menu-toggle" data-menu-toggle aria-expanded="false" data-icon="menu"></button>
+  </div><div class="mobile-menu" data-mobile-menu><a href="index.html"><span data-icon="home"></span>Inicio</a><a href="mapa.html"><span data-icon="map"></span>Mapa de focos</a><a href="reportar.html"><span data-icon="report"></span>Reportar un foco</a><a href="panel.html"><span data-icon="layers"></span>Panel comunitario</a></div></header>
+
+  <main class="main"><div class="container">
+    <div class="section-head"><div><div class="section-kicker">Nuevo reporte</div><h1 class="section-title">Indicá dónde viste el posible foco</h1><p class="section-desc">Podés usar tu ubicación actual o tocar directamente el mapa para elegir un punto específico. Esta segunda opción funciona aunque el GPS esté desactivado.</p></div></div>
+    <div class="form-shell">
+      <section class="form-card reveal" data-reveal>
+        <div class="form-step"><div class="step-no">1</div><div><h3>Ubicación</h3><p>Elegí el punto exacto donde se encuentra el posible foco.</p></div></div>
+        <div class="location-box"><div class="location-status"><span data-icon="location" style="color:var(--azul-2)"></span><div><strong id="location-title">Sin ubicación seleccionada</strong><span id="location-sub">Tocá el mapa o usá tu ubicación actual.</span><div class="coord-text" id="coords-text"></div></div></div></div>
+        <div class="row" style="margin-bottom:14px"><button class="btn btn-soft" id="btn-gps" type="button"><span data-icon="target"></span> Usar mi ubicación</button><button class="btn btn-soft" id="btn-center" type="button"><span data-icon="location"></span> Centrar Formosa</button></div>
+        <div id="map-picker"></div>
+        <p class="muted" style="font-size:11px; text-align:center; margin-top:8px">Podés mover el marcador o tocar cualquier lugar del mapa para cambiar el punto.</p>
+
+        <div class="form-step" style="margin-top:28px"><div class="step-no">2</div><div><h3>Tipo de foco</h3><p>Seleccioná la situación que observaste.</p></div></div>
+        <div class="choice-grid" id="tipo-grid">
+          <button type="button" class="choice-btn" data-tipo="Agua estancada"><span class="choice-icon"><span data-icon="water"></span></span><span class="choice-copy"><strong>Agua estancada</strong><span>Charcos o recipientes</span></span></button>
+          <button type="button" class="choice-btn" data-tipo="Recipiente con agua"><span class="choice-icon"><span data-icon="bottle"></span></span><span class="choice-copy"><strong>Recipiente con agua</strong><span>Tachos, bidones, envases</span></span></button>
+          <button type="button" class="choice-btn" data-tipo="Basura acumulada"><span class="choice-icon"><span data-icon="trash"></span></span><span class="choice-copy"><strong>Basura acumulada</strong><span>Residuos que retienen agua</span></span></button>
+          <button type="button" class="choice-btn" data-tipo="Cubierta con agua"><span class="choice-icon"><span data-icon="tire"></span></span><span class="choice-copy"><strong>Cubierta con agua</strong><span>Neumáticos abandonados</span></span></button>
+          <button type="button" class="choice-btn" data-tipo="Planta con agua"><span class="choice-icon"><span data-icon="leaf"></span></span><span class="choice-copy"><strong>Planta con agua</strong><span>Macetas o recipientes</span></span></button>
+          <button type="button" class="choice-btn" data-tipo="Otro"><span class="choice-icon"><span data-icon="help"></span></span><span class="choice-copy"><strong>Otro</strong><span>Otra situación observable</span></span></button>
+        </div>
+      </section>
+
+      <aside class="form-card reveal" data-reveal>
+        <div class="form-step"><div class="step-no">3</div><div><h3>Nivel de riesgo</h3><p>Usá una valoración orientativa según lo que observás.</p></div></div>
+        <div class="risk-grid" id="risk-grid"><button type="button" class="risk-btn" data-riesgo="alto">ALTO</button><button type="button" class="risk-btn" data-riesgo="medio">MEDIO</button><button type="button" class="risk-btn" data-riesgo="bajo">BAJO</button></div>
+        <div class="field" style="margin-top:22px">
+          <label class="label" for="barrio">Barrio</label>
+          <select class="select" id="barrio" required>
+            <option value="">Seleccioná un barrio de Formosa Capital</option>
+            <optgroup label="Zona 1">
+              <option value="Centro">Centro</option>
+              <option value="Don Bosco">Don Bosco</option>
+              <option value="Independencia">Independencia</option>
+              <option value="San Martín">San Martín</option>
+            </optgroup>
+            <optgroup label="Zona 2">
+              <option value="17 de Octubre">17 de Octubre</option>
+              <option value="2 de Abril">2 de Abril</option>
+              <option value="8 de Marzo">8 de Marzo</option>
+              <option value="Colluccio">Colluccio</option>
+              <option value="Cono Sur">Cono Sur</option>
+              <option value="El Mistol">El Mistol</option>
+              <option value="El Palmar">El Palmar</option>
+              <option value="Evita">Evita</option>
+              <option value="Federación">Federación</option>
+              <option value="Ibirá Pitá">Ibirá Pitá</option>
+              <option value="Illia I">Illia I</option>
+              <option value="Illia II">Illia II</option>
+              <option value="Itatí I">Itatí I</option>
+              <option value="Juan Manuel de Rosas">Juan Manuel de Rosas</option>
+              <option value="La Paz">La Paz</option>
+              <option value="Jardines de Formosa">Jardines de Formosa</option>
+              <option value="Libertad">Libertad</option>
+              <option value="Malvinas">Malvinas</option>
+              <option value="Municipal">Municipal</option>
+              <option value="Parque Urbano I">Parque Urbano I</option>
+              <option value="Parque Urbano II">Parque Urbano II</option>
+              <option value="San Francisco">San Francisco</option>
+              <option value="San Isidro Labrador">San Isidro Labrador</option>
+              <option value="San Miguel">San Miguel</option>
+              <option value="San Pedro">San Pedro</option>
+              <option value="Solidaridad">Solidaridad</option>
+              <option value="Urunday">Urunday</option>
+              <option value="Venezuela">Venezuela</option>
+              <option value="Incone">Incone</option>
+              <option value="Guayaibí">Guayaibí</option>
+              <option value="Vial">Vial</option>
+              <option value="Complejo Las Américas">Complejo Las Américas</option>
+            </optgroup>
+            <optgroup label="Zona 3">
+              <option value="COVIFOL">COVIFOL</option>
+              <option value="Fontana">Fontana</option>
+              <option value="Guadalupe">Guadalupe</option>
+              <option value="Hipólito Yrigoyen">Hipólito Yrigoyen</option>
+              <option value="La Alborada">La Alborada</option>
+              <option value="La Pilar">La Pilar</option>
+              <option value="Laguna Siam">Laguna Siam</option>
+              <option value="Mariano Moreno">Mariano Moreno</option>
+              <option value="Obrero">Obrero</option>
+              <option value="Parque Industrial">Parque Industrial</option>
+              <option value="San Jorge">San Jorge</option>
+              <option value="Santa Rosa">Santa Rosa</option>
+              <option value="Villa del Rosario">Villa del Rosario</option>
+              <option value="1.º de Mayo">1.º de Mayo</option>
+              <option value="8 de Octubre">8 de Octubre</option>
+              <option value="8 de Octubre Bis">8 de Octubre Bis</option>
+              <option value="12 de Octubre">12 de Octubre</option>
+              <option value="16 de Julio">16 de Julio</option>
+              <option value="20 de Julio">20 de Julio</option>
+              <option value="25 de Mayo">25 de Mayo</option>
+              <option value="28 de Junio">28 de Junio</option>
+              <option value="Antenor Gauna">Antenor Gauna</option>
+              <option value="Bernardino Rivadavia">Bernardino Rivadavia</option>
+              <option value="Divino Niño">Divino Niño</option>
+              <option value="El Porvenir">El Porvenir</option>
+              <option value="El Palomar">El Palomar</option>
+              <option value="El Quebrachito">El Quebrachito</option>
+              <option value="La Nueva Formosa">La Nueva Formosa</option>
+              <option value="La Floresta">La Floresta</option>
+              <option value="Las Delicias">Las Delicias</option>
+              <option value="Las Orquídeas">Las Orquídeas</option>
+              <option value="Liborsi">Liborsi</option>
+              <option value="Lote 67">Lote 67</option>
+              <option value="Lote 111">Lote 111</option>
+              <option value="Luján">Luján</option>
+              <option value="Medalla Milagrosa">Medalla Milagrosa</option>
+              <option value="Monteagudo">Monteagudo</option>
+              <option value="Namqom">Namqom</option>
+              <option value="Pompeya">Pompeya</option>
+              <option value="República Argentina">República Argentina</option>
+              <option value="Fray Salvador Gurrieri">Fray Salvador Gurrieri</option>
+              <option value="San Agustín">San Agustín</option>
+              <option value="San Andrés">San Andrés</option>
+              <option value="San Antonio">San Antonio</option>
+              <option value="San Antonio I">San Antonio I</option>
+              <option value="San Antonio II">San Antonio II</option>
+              <option value="San Juan I">San Juan I</option>
+              <option value="San Juan Bautista">San Juan Bautista</option>
+              <option value="San José Obrero">San José Obrero</option>
+              <option value="San Blas">San Blas</option>
+              <option value="Simón Bolívar">Simón Bolívar</option>
+              <option value="Sagrado Corazón de María">Sagrado Corazón de María</option>
+              <option value="Stella Maris">Stella Maris</option>
+              <option value="Villa del Carmen">Villa del Carmen</option>
+              <option value="Villa Jardín">Villa Jardín</option>
+              <option value="Villa Hermosa">Villa Hermosa</option>
+              <option value="Villa Lourdes">Villa Lourdes</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="calle">Calle o dirección exacta</label>
+          <div class="row" style="gap:10px; align-items:center">
+            <input class="input" id="calle" type="text" placeholder="Ej.: Avenida 9 de Julio 800, Formosa" style="flex:1">
+            <button class="btn btn-soft" id="btn-direccion" type="button">Buscar</button>
+          </div>
+          <p class="muted" style="font-size:11px; margin-top:6px">Si ingresás una dirección, la app intentará ubicar el punto exacto en el mapa.</p>
+        </div>
+        <div class="field">
+          <label class="label" for="telefono">Teléfono de contacto</label>
+          <input class="input" id="telefono" type="tel" inputmode="tel" maxlength="20" placeholder="Ej.: 3715-123456" required>
+          <p class="muted" style="font-size:11px; margin-top:6px">Este dato sirve para que la municipalidad pueda comunicarse con la persona que solicitó el servicio de limpieza.</p>
+        </div>
+        <div class="field"><label class="label" for="descripcion">Descripción <span class="muted">(opcional)</span></label><textarea class="textarea" id="descripcion" maxlength="500" placeholder="Contanos qué viste, por ejemplo: recipientes con agua acumulada en un patio abierto."></textarea></div>
+        <div class="notice" style="margin-bottom:16px"><span data-icon="info"></span><div>La ubicación es obligatoria. No hace falta activar el GPS si preferís elegir el punto manualmente.</div></div>
+        <button class="btn btn-red btn-block" id="btn-enviar" type="button"><span data-icon="send"></span> Enviar reporte</button>
+        <div class="loading hidden" id="msg-enviando"><div class="spinner"></div>Guardando el reporte...</div>
+        <div class="success-card hidden" id="msg-exito" style="margin-top:14px"><div class="row" style="margin-bottom:8px;color:var(--verde)"><span data-icon="check" data-icon-size="24"></span><strong>Reporte enviado correctamente</strong></div><p class="muted" style="font-size:13px;line-height:1.5">El reporte fue guardado y puede aparecer en el mapa cuando se actualice la consulta.</p><div class="row" style="margin-top:12px"><a class="btn btn-blue" href="mapa.html">Ver mapa</a><button class="btn btn-soft" id="btn-nuevo" type="button">Nuevo reporte</button></div></div>
+        <div class="alert-card hidden" id="msg-error" style="margin-top:14px"><div class="row" style="margin-bottom:5px"><span data-icon="info"></span><strong>No se pudo enviar el reporte</strong></div><p id="error-text" style="font-size:12px;line-height:1.5"></p><button class="btn btn-soft" id="btn-reintentar" type="button" style="margin-top:11px">Reintentar</button></div>
+      </aside>
+    </div>
+  </div></main>
+  <footer class="footer"><div class="footer-inner"><div><div class="footer-title">AlertaFoco Formosa</div><p>Reporte comunitario de posibles focos de dengue.</p><div class="footer-logos"><div class="institutional-badge logo-badge-todos"><div class="logo-todos-mark"><div class="logo-todos-stars"><span></span><span></span><span></span><span></span></div></div><div class="logo-todos-text"><strong>TODOS</strong><span>UNIDOS</span></div></div><div class="institutional-badge logo-badge-gobierno"><div class="logo-gobierno-escudo"></div><div class="logo-gobierno-text"><strong>GOBIERNO</strong><span>DE FORMOSA</span></div></div><div class="institutional-badge logo-badge-ipf"><div class="logo-ipf-mark">IPF</div><div class="logo-ipf-text"><strong>INSTITUTO</strong><span>POLITÉCNICO</span><strong>FORMOSA</strong></div></div></div></div><div><div class="footer-title">Navegación</div><p><a href="index.html">Inicio</a><br><a href="mapa.html">Mapa</a><br><a href="panel.html">Panel</a></p></div><div><div class="footer-title">Gobierno</div><p>Gobierno de la Provincia de Formosa</p></div></div></footer>
+  <nav class="bottom-nav"><a href="index.html"><span data-icon="home"></span>Inicio</a><a href="reportar.html" class="activo"><span data-icon="report"></span>Reportar</a><a href="mapa.html"><span data-icon="map"></span>Mapa</a><a href="panel.html"><span data-icon="layers"></span>Panel</a></nav>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="js/firebase-config.js"></script><script src="js/app.js"></script>
+  <script>
+    const FORMOSA=[-26.1775,-58.1781]; let lat=null,lng=null,tipoFoco='',nivelRiesgo=''; let marker=null; let picker; let tiposSeleccionados=[];
+
+    function setUbicacion(la,lo,source){
+      if(!Number.isFinite(la)||!Number.isFinite(lo)||la<-90||la>90||lo<-180||lo>180){mostrarError('La ubicación seleccionada no es válida.');return false;}
+      lat=la; lng=lo;
+      if(marker) { marker.setLatLng([lat,lng]); } else { marker=L.marker([lat,lng],{draggable:true}).addTo(picker); marker.on('dragend',()=>{const p=marker.getLatLng(); setUbicacion(p.lat,p.lng,'marker');}); }
+      const locationTitle = source === 'gps' ? 'Ubicación GPS seleccionada' : source === 'geocode' ? 'Dirección localizada' : 'Punto seleccionado en el mapa';
+      document.getElementById('location-title').textContent = locationTitle;
+      document.getElementById('location-sub').textContent = 'El punto queda guardado para este reporte.';
+      document.getElementById('coords-text').textContent=`Lat ${lat.toFixed(6)} · Lng ${lng.toFixed(6)}`;
+      document.getElementById('msg-error').classList.add('hidden'); return true;
+    }
+
+    function mostrarError(msg){document.getElementById('error-text').textContent=msg;document.getElementById('msg-error').classList.remove('hidden');}
+
+    function obtenerUbicacion(){
+      const btn=document.getElementById('btn-gps'); btn.disabled=true; btn.innerHTML='<span class="spinner" style="width:17px;height:17px;border-width:2px;margin:0"></span> Obteniendo...';
+      if(!navigator.geolocation){btn.disabled=false;btn.innerHTML=`${AFIcon('target')} Usar mi ubicación`;mostrarError('Tu navegador no permite geolocalización. Elegí el punto manualmente en el mapa.');return;}
+      navigator.geolocation.getCurrentPosition(pos=>{setUbicacion(pos.coords.latitude,pos.coords.longitude,'gps');picker.setView([pos.coords.latitude,pos.coords.longitude],16);btn.disabled=false;btn.innerHTML=`${AFIcon('target')} Usar mi ubicación`;},err=>{btn.disabled=false;btn.innerHTML=`${AFIcon('target')} Usar mi ubicación`;mostrarError(err.code===1?'El navegador bloqueó el acceso a tu ubicación. Elegí el punto manualmente en el mapa.':'No se pudo obtener tu ubicación automáticamente. Elegí el punto manualmente en el mapa.');},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+    }
+
+    async function geolocalizarTexto(texto, tipo='direccion') {
+      const valor = (texto || '').trim();
+      if (!valor) return false;
+      const query = tipo === 'barrio' ? `${valor}, Formosa, Argentina` : `${valor}, Formosa Capital, Formosa, Argentina`;
+      try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error('No se pudo consultar geolocalización');
+        const data = await response.json();
+        if (!data || !data.length) {
+          mostrarError(`No encontramos una ubicación precisa para "${valor}". Podés ubicarlo manualmente en el mapa.`);
+          return false;
+        }
+        const ubicacion = data[0];
+        const latitud = Number(ubicacion.lat);
+        const longitud = Number(ubicacion.lon);
+        setUbicacion(latitud, longitud, 'geocode');
+        picker.setView([latitud, longitud], 16);
+        document.getElementById('location-title').textContent = tipo === 'barrio' ? `Barrio localizado: ${valor}` : `Dirección localizada`; 
+        document.getElementById('location-sub').textContent = 'Se marcó la ubicación más precisa disponible.';
+        return true;
+      } catch (error) {
+        console.warn('Geocodificación fallida:', error);
+        mostrarError(`No pudimos ubicar "${valor}" automáticamente. Podés elegir el punto manualmente en el mapa.`);
+        return false;
+      }
+    }
+
+    function seleccionarTipo(tipo, el) {
+      const indice = tiposSeleccionados.indexOf(tipo);
+      if (indice >= 0) {
+        tiposSeleccionados.splice(indice, 1);
+        el.classList.remove('activo');
+      } else {
+        tiposSeleccionados.push(tipo);
+        el.classList.add('activo');
+      }
+      tipoFoco = tiposSeleccionados.length ? tiposSeleccionados.join(', ') : '';
+    }
+
+    function seleccionarRiesgo(nivel,el){nivelRiesgo=nivel;document.querySelectorAll('[data-riesgo]').forEach(b=>b.classList.remove('activo-alto','activo-medio','activo-bajo'));el.classList.add('activo-'+nivel);}
+    function validar(){
+      const errors=[];
+      if(lat===null||lng===null) errors.push('Marcá un punto en el mapa o usá tu ubicación actual.');
+      if(!tiposSeleccionados.length) errors.push('Seleccioná al menos un tipo de foco.');
+      if(!nivelRiesgo) errors.push('Seleccioná el nivel de riesgo.');
+      const barrio = document.getElementById('barrio').value.trim();
+      if(!barrio) errors.push('Seleccioná el barrio correspondiente.');
+      const telefono = document.getElementById('telefono').value.trim();
+      if(!telefono) errors.push('Ingresá un teléfono de contacto para coordinar la limpieza.');
+      else if (!/^\+?[0-9\s\-()]{7,20}$/.test(telefono)) errors.push('Ingresá un teléfono válido.');
+      return errors;
+    }
+
+    function guardarLocal(payload){
+      if (!window.ALERTAFOCO_saveLocalReport) return false;
+      window.ALERTAFOCO_saveLocalReport({
+        ...payload,
+        fecha: { seconds: Math.floor(Date.now() / 1000) },
+        fuente: 'local'
+      });
+      return true;
+    }
+
+    async function enviarReporte(){
+      const errors=validar(); if(errors.length){mostrarError(errors.join(' '));document.getElementById('msg-error').scrollIntoView({behavior:'smooth',block:'center'});return;}
+      const btn=document.getElementById('btn-enviar'); btn.disabled=true; btn.classList.add('hidden'); document.getElementById('msg-error').classList.add('hidden'); document.getElementById('msg-enviando').classList.remove('hidden');
+      const barrio = document.getElementById('barrio').value.trim();
+      const calle = document.getElementById('calle').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const payload={tipoFoco: tiposSeleccionados.join(', '),latitud:Number(lat),longitud:Number(lng),estado:'pendiente',nivelRiesgo,barrio,barrioSolicitante:barrio,telefonoContacto:telefono,descripcion:document.getElementById('descripcion').value.trim(),direccion: calle};
+
+      try{
+        if(!window.db || !window.firebase || !window.firebase.firestore){
+          guardarLocal(payload);
+          document.getElementById('msg-enviando').classList.add('hidden');
+          document.getElementById('msg-exito').classList.remove('hidden');
+          const texto = document.querySelector('#msg-exito p');
+          if (texto) texto.textContent = 'El reporte quedó guardado localmente porque la conexión con Firebase no está disponible. Podés revisarlo desde el panel cuando vuelva la conexión.';
+          btn.disabled=false; btn.classList.remove('hidden');
+          return;
+        }
+
+        const payloadCloud={
+          ...payload,
+          fecha: window.firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection('reportes').add(payloadCloud);
+        document.getElementById('msg-enviando').classList.add('hidden'); document.getElementById('msg-exito').classList.remove('hidden');
+      }catch(e){
+        guardarLocal(payload);
+        document.getElementById('msg-enviando').classList.add('hidden');
+        document.getElementById('msg-exito').classList.remove('hidden');
+        const texto = document.querySelector('#msg-exito p');
+        if (texto) texto.textContent = 'El reporte se guardó localmente, y puede sincronizarse cuando la conexión esté disponible.';
+        btn.disabled=false; btn.classList.remove('hidden');
+      }
+    }
+    function nuevoReporte(){location.reload();}
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      picker=L.map('map-picker',{zoomControl:true}).setView(FORMOSA,13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(picker);
+      picker.on('click',e=>setUbicacion(e.latlng.lat,e.latlng.lng,'map'));
+      document.getElementById('btn-gps').addEventListener('click',obtenerUbicacion);
+      document.getElementById('btn-center').addEventListener('click',()=>picker.setView(FORMOSA,13));
+      document.querySelectorAll('[data-tipo]').forEach(el=>el.addEventListener('click',()=>seleccionarTipo(el.dataset.tipo,el)));
+      document.querySelectorAll('[data-riesgo]').forEach(el=>el.addEventListener('click',()=>seleccionarRiesgo(el.dataset.riesgo,el)));
+      document.getElementById('barrio').addEventListener('change', function(){
+        const barrio = this.value.trim();
+        if (barrio) geolocalizarTexto(barrio, 'barrio');
+      });
+      document.getElementById('btn-direccion').addEventListener('click', function(){
+        const valor = document.getElementById('calle').value.trim();
+        if (valor) geolocalizarTexto(valor, 'direccion');
+        else mostrarError('Ingresá una calle o dirección para ubicar el punto exacto en el mapa.');
+      });
+      document.getElementById('calle').addEventListener('keydown', function(event){
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const valor = this.value.trim();
+          if (valor) geolocalizarTexto(valor, 'direccion');
+        }
+      });
+      document.getElementById('btn-enviar').addEventListener('click',enviarReporte); document.getElementById('btn-nuevo').addEventListener('click',nuevoReporte); document.getElementById('btn-reintentar').addEventListener('click',enviarReporte);
+      setTimeout(()=>picker.invalidateSize(),250);
+    });
+  </script>
+</body>
+</html>
