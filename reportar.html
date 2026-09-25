@@ -141,6 +141,7 @@
               <option value="Villa Jardín">Villa Jardín</option>
               <option value="Villa Hermosa">Villa Hermosa</option>
               <option value="Villa Lourdes">Villa Lourdes</option>
+              <option value="Instituto Politecnico Formosa">Instituto Politecnico Formosa</option>
             </optgroup>
           </select>
         </div>
@@ -195,12 +196,33 @@
     async function geolocalizarTexto(texto, tipo='direccion') {
       const valor = (texto || '').trim();
       if (!valor) return false;
-      const query = tipo === 'barrio' ? `${valor}, Formosa, Argentina` : `${valor}, Formosa Capital, Formosa, Argentina`;
+      const sinAcentos = valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const variantes = tipo === 'barrio'
+        ? [`${valor}, Formosa, Argentina`, `${sinAcentos}, Formosa, Argentina`]
+        : [
+            `${valor}, Formosa Capital, Formosa, Argentina`,
+            `${valor.replace(/\s+y\s+/i, ' & ')}, Formosa, Argentina`,
+            `${sinAcentos.replace(/\s+y\s+/i, ' & ')}, Formosa, Argentina`,
+            `${valor}, Formosa, Argentina`
+          ];
       try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`);
-        if (!response.ok) throw new Error('No se pudo consultar geolocalización');
-        const data = await response.json();
-        if (!data || !data.length) {
+        let data = [];
+        for (const query of variantes) {
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=ar&bounded=1&viewbox=-58.35,-26.05,-58.05,-26.30&q=${encodeURIComponent(query)}`);
+          if (!response.ok) throw new Error('No se pudo consultar geolocalización');
+          data = await response.json();
+          if (data.length) break;
+        }
+        if (!data.length && tipo === 'direccion') {
+          const response = await fetch(`https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&maxLocations=5&singleLine=${encodeURIComponent(`${valor}, Formosa, Argentina`)}`);
+          if (!response.ok) throw new Error('No se pudo consultar geolocalización alternativa');
+          const resultadoAlternativo = await response.json();
+          const candidato = resultadoAlternativo.candidates && resultadoAlternativo.candidates[0];
+          if (candidato && candidato.location) {
+            data = [{lat: candidato.location.y, lon: candidato.location.x, display_name: candidato.address}];
+          }
+        }
+        if (!data.length) {
           mostrarError(`No encontramos una ubicación precisa para "${valor}". Podés ubicarlo manualmente en el mapa.`);
           return false;
         }

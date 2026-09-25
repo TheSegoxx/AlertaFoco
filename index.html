@@ -118,7 +118,6 @@
       }catch(e){el.innerHTML='<div class="notice red" style="grid-column:1/-1"><span data-icon="info"></span><div>No fue posible cargar las estadísticas ahora. El resto del sitio sigue disponible.</div></div>'; document.querySelectorAll('[data-icon]').forEach(x=>x.dataset.iconReady='');}
     }
     cargarStats();
-    if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
   </script>
 </body>
 </html>

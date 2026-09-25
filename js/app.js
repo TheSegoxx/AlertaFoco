@@ -133,5 +133,22 @@
     initYear();
   }
 
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || window.__alertaFocoReloaded) return;
+      window.__alertaFocoReloaded = true;
+      window.location.reload();
+    });
+    navigator.serviceWorker.register('./service-worker.js').then(registration => {
+      registration.update();
+    }).catch(error => {
+      console.error('No se pudo actualizar el service worker.', error);
+    });
+  }
+
+  registerServiceWorker();
   document.addEventListener('DOMContentLoaded', init);
 })();
